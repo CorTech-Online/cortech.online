@@ -28,7 +28,8 @@ export default function BlogApp() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/blog.json')
+    // Security: prevent application hangs / DoS by ensuring the request eventually times out
+    fetch('/api/blog.json', { signal: AbortSignal.timeout(10000) })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((data: BlogPayload) => {
         if (!cancelled) setPayload(data);
