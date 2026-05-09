@@ -30,7 +30,8 @@ export async function fetchAllRepos(username: string): Promise<Repo[]> {
   const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(url, { headers });
+  // Security enhancement: Add a 10s timeout to prevent DoS via hanging requests
+  const res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
   if (!res.ok) {
     throw new Error(
       `GitHub API ${res.status} ${res.statusText} for ${url}` +
