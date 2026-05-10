@@ -35,7 +35,8 @@ export function useProjects() {
     }
 
     if (!fetchPromise) {
-      fetchPromise = fetch('/api/projects.json').then((r) =>
+      // Security: Add timeout to prevent application hangs and DoS vulnerabilities from stalled connections
+      fetchPromise = fetch('/api/projects.json', { signal: AbortSignal.timeout(10000) }).then((r) =>
         r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)),
       );
     }
