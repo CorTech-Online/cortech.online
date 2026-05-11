@@ -77,17 +77,45 @@ export function Launcher({ open, onClose }: Props) {
       >
         <div className="flex items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-panel-hi)] px-4 py-3 transition-shadow duration-200 focus-within:border-[var(--color-amber)] focus-within:ring-1 focus-within:ring-[var(--color-amber)]">
           <span className="font-mono text-xs text-[var(--color-amber)]">›</span>
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search apps…"
-            className="flex-1 bg-transparent text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)]"
-            aria-label="Search apps"
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={100} // Security: prevent DoS via extremely long input strings
-          />
+          <div className="relative flex flex-1 items-center">
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search apps…"
+              className="w-full bg-transparent pr-6 text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)]"
+              aria-label="Search apps"
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={100} // Security: prevent DoS via extremely long input strings
+            />
+            {query.length > 0 && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                className="absolute right-0 flex items-center justify-center rounded-sm p-1 text-[var(--color-muted)] hover:text-[var(--color-amber)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-amber)]"
+                onClick={() => {
+                  setQuery('');
+                  inputRef.current?.focus();
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            )}
+          </div>
           <span className="font-mono text-[10px] text-[var(--color-muted)]">Esc</span>
         </div>
 

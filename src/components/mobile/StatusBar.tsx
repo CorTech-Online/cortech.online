@@ -18,9 +18,9 @@ export function StatusBar() {
       className="flex h-7 flex-none items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-shadow)]/95 px-4 font-mono text-[10px] tracking-[0.18em] text-[var(--color-muted)] uppercase backdrop-blur"
     >
       <span>CortechOS mobile</span>
-      <span className="text-[var(--color-dim)] tabular-nums" aria-live="polite">
+      <time dateTime={now.toISOString()} className="text-[var(--color-dim)] tabular-nums">
         {formatTime(now)}
-      </span>
+      </time>
     </div>
   );
 }
