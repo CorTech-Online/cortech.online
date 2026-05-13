@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
+import { X } from 'lucide-react';
 import { useProjects, relativeTime } from '../../../hooks/useProjects';
 
 export default function ProjectsApp() {
   const { payload, error } = useProjects();
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     if (!payload) return [];
@@ -35,6 +37,7 @@ export default function ProjectsApp() {
         <div className="mt-2 flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-shadow)] px-3 py-1.5 transition-shadow duration-200 focus-within:border-[var(--color-amber)] focus-within:ring-1 focus-within:ring-[var(--color-amber)]">
           <span className="font-mono text-[11px] text-[var(--color-amber)]">›</span>
           <input
+            ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter by name, language, or description"
@@ -42,6 +45,19 @@ export default function ProjectsApp() {
             aria-label="Filter projects"
             maxLength={100} // Security: prevent DoS via extremely long input strings
           />
+          {query && (
+            <button
+              type="button"
+              aria-label="Clear filter"
+              onClick={() => {
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+              className="flex items-center justify-center rounded-sm text-[var(--color-muted)] transition hover:text-[var(--color-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-amber)]"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </header>
 

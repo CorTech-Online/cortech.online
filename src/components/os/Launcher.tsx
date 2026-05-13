@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { type AppManifest } from '../../apps/registry';
 import { renderIcon } from '../../apps/iconUtils';
 import { useAllApps } from '../../hooks/useAllApps';
@@ -88,6 +89,19 @@ export function Launcher({ open, onClose }: Props) {
             spellCheck={false}
             maxLength={100} // Security: prevent DoS via extremely long input strings
           />
+          {query && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => {
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+              className="flex items-center justify-center rounded-sm text-[var(--color-muted)] transition hover:text-[var(--color-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-amber)]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
           <span className="font-mono text-[10px] text-[var(--color-muted)]">Esc</span>
         </div>
 
