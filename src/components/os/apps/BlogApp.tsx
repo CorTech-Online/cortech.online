@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { relativeTime } from '../../../hooks/useProjects';
 
 type BlogPost = {
@@ -25,6 +26,7 @@ export default function BlogApp() {
   const [payload, setPayload] = useState<BlogPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +73,7 @@ export default function BlogApp() {
         <div className="mt-2 flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-shadow)] px-3 py-1.5 transition-shadow duration-200 focus-within:border-[var(--color-amber)] focus-within:ring-1 focus-within:ring-[var(--color-amber)]">
           <span className="font-mono text-[11px] text-[var(--color-amber)]">›</span>
           <input
+            ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter by title, tag, or summary"
@@ -78,6 +81,19 @@ export default function BlogApp() {
             aria-label="Filter posts"
             maxLength={100} // Security: prevent DoS via extremely long input strings
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+              aria-label="Clear search"
+              className="text-[var(--color-muted)] hover:text-[var(--color-amber)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-amber)]"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
       </header>
 
