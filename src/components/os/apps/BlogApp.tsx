@@ -21,21 +21,40 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
+// Module-level cache to prevent duplicate fetches when the blog app
+// mounts/unmounts frequently within the window manager.
+let fetchPromise: Promise<BlogPayload> | null = null;
+let cachedPayload: BlogPayload | null = null;
+
 export default function BlogApp() {
-  const [payload, setPayload] = useState<BlogPayload | null>(null);
+  const [payload, setPayload] = useState<BlogPayload | null>(cachedPayload);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/blog.json')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+
+    if (cachedPayload) {
+      setPayload(cachedPayload);
+      return;
+    }
+
+    if (!fetchPromise) {
+      // 10s timeout to prevent UI hangs on slow networks
+      fetchPromise = fetch('/api/blog.json', { signal: AbortSignal.timeout(10000) })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+    }
+
+    fetchPromise
       .then((data: BlogPayload) => {
+        cachedPayload = data;
         if (!cancelled) setPayload(data);
       })
       .catch((err) => {
+        fetchPromise = null; // Allow retry on error
         if (!cancelled) setError(err instanceof Error ? err.message : 'failed to load');
       });
+
     return () => {
       cancelled = true;
     };
