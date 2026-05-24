@@ -78,4 +78,30 @@ describe('triggersFor()', () => {
     expect(BUG_CLASS_MIN_PCT).toBeGreaterThan(0);
     expect(FUNNEL_MIN_PCT).toBeGreaterThan(0);
   });
+
+  it('detects newly revealed GHSA identifiers', () => {
+    const oldDigest = loadDigest('old');
+    const newRaw = loadRaw('new');
+    // Inject a GHSA into a copy of newRaw so it shows up as newly revealed.
+    const augmentedRaw = {
+      ...newRaw,
+      ghsa_records: [
+        ...(newRaw.ghsa_records ?? []),
+        {
+          identifier: 'GHSA-aaaa-bbbb-cccc',
+          findings: [{ project: 'curl', bug_class: 'xss', ecosystem: 'Other' }],
+        },
+      ],
+    };
+    const newDigest = digest(augmentedRaw, '2026-05-24T19:00:00Z');
+    const ts = triggersFor(oldDigest, newDigest, augmentedRaw);
+    const revealed = ts.filter((t) => t.kind === 'revealed' && t.cve_id === 'GHSA-aaaa-bbbb-cccc');
+    expect(revealed).toHaveLength(1);
+    expect(revealed[0]).toMatchObject({
+      kind: 'revealed',
+      cve_id: 'GHSA-aaaa-bbbb-cccc',
+      project: 'curl',
+      bug_class: 'xss',
+    });
+  });
 });

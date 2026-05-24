@@ -21,12 +21,23 @@ type RawPayload = {
     identifier: string;
     findings: Array<{ project: string; bug_class: string; ecosystem: string }>;
   }>;
-  ghsa_records: Array<unknown>;
+  // TODO: field name is misleading — ghsa_records has the same shape as cve_records
+  ghsa_records: Array<{
+    identifier: string;
+    findings: Array<{ project: string; bug_class: string; ecosystem: string }>;
+  }>;
 };
 
 export function digest(raw: RawPayload, fetchedAt: string): Digest {
   const projectNames = Array.from(new Set(raw.by_project.map((p) => p.project))).sort();
-  const cveIds = Array.from(new Set(raw.cve_records.map((r) => r.identifier))).sort();
+  // TODO: field name `revealed_cve_ids` is a misnomer — it now stores both CVE and GHSA IDs.
+  // Renaming would break the snapshot bootstrap; update when snapshot format is versioned.
+  const cveIds = Array.from(
+    new Set([
+      ...raw.cve_records.map((r) => r.identifier),
+      ...(raw.ghsa_records ?? []).map((r) => r.identifier),
+    ]),
+  ).sort();
   return {
     as_of: raw.as_of,
     fetched_at: fetchedAt,

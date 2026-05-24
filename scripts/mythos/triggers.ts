@@ -12,6 +12,11 @@ type RawForEnrichment = {
     identifier: string;
     findings: Array<{ project: string; bug_class: string; ecosystem: string }>;
   }>;
+  // TODO: `cve_id` in the revealed trigger also holds GHSA IDs now.
+  ghsa_records: Array<{
+    identifier: string;
+    findings: Array<{ project: string; bug_class: string; ecosystem: string }>;
+  }>;
   by_project: Array<{ project: string; ecosystem: string; cve_ids: string[] }>;
 };
 
@@ -28,7 +33,10 @@ export function triggersFor(oldD: Digest, newD: Digest, newRaw?: RawForEnrichmen
 
   for (const cveId of newD.revealed_cve_ids) {
     if (oldCves.has(cveId)) continue;
-    const record = newRaw?.cve_records.find((r) => r.identifier === cveId);
+    // Check cve_records first (more common), fall back to ghsa_records.
+    const record =
+      newRaw?.cve_records.find((r) => r.identifier === cveId) ??
+      newRaw?.ghsa_records?.find((r) => r.identifier === cveId);
     const finding = record?.findings[0];
     triggers.push({
       kind: 'revealed',

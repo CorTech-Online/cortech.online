@@ -29,7 +29,10 @@ export type Post = {
   body: string;
 };
 
-const CVE_REGEX = /\bCVE-\d{4}-\d{4,7}\b/g;
+// Matches both CVE (CVE-YYYY-NNNNN) and GHSA (GHSA-xxxx-xxxx-xxxx) identifiers.
+// Note: `gi` makes matching case-insensitive, but knownSet.has() is case-sensitive —
+// so a lowercased emission like `cve-2026-0002` would be extracted but fail the hallucination check.
+const CVE_REGEX = /\b(?:CVE-\d{4}-\d{4,7}|GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4})\b/gi;
 const MIN_WORDS = 120;
 const MAX_WORDS = 400;
 const MAX_ATTEMPTS = 2;
