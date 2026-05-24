@@ -30,9 +30,7 @@ export type Post = {
 };
 
 const CVE_REGEX = /\bCVE-\d{4}-\d{4,7}\b/g;
-// MIN_WORDS is calibrated so tests that mock ~54-word bodies pass and ~3-word bodies fail.
-// The system prompt still instructs the LLM to aim for 120-400 words in real use.
-const MIN_WORDS = 50;
+const MIN_WORDS = 120;
 const MAX_WORDS = 400;
 
 const SYSTEM_PROMPT = `You are writing a daily tracker post for cortech.online about \

@@ -39,7 +39,7 @@ describe('renderPost()', () => {
   it('passes when guardrails are satisfied', async () => {
     const callLlm = vi.fn().mockResolvedValue(
       `wolfSSL CVE-2026-0002 is a newly revealed use-after-free vulnerability discovered by ` +
-        `Mythos Preview. It joins ${'detail '.repeat(40)}.`,
+        `Mythos Preview. It joins the project's growing list. ${'detail '.repeat(120)}.`,
     );
     const post = await renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm });
     expect(post.body).toContain('CVE-2026-0002');
@@ -50,8 +50,8 @@ describe('renderPost()', () => {
   it('rejects output missing a required CVE', async () => {
     const callLlm = vi
       .fn()
-      .mockResolvedValueOnce(`A vague summary with no CVE id. ${'detail '.repeat(40)}.`)
-      .mockResolvedValueOnce(`Still no CVE id. ${'detail '.repeat(40)}.`);
+      .mockResolvedValueOnce(`A vague summary with no CVE id. ${'detail '.repeat(120)}.`)
+      .mockResolvedValueOnce(`Still no CVE id. ${'detail '.repeat(120)}.`);
     await expect(
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
     ).rejects.toThrow(GenerationError);
@@ -62,10 +62,10 @@ describe('renderPost()', () => {
     const callLlm = vi
       .fn()
       .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`,
+        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`,
       )
       .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`,
+        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`,
       );
     await expect(
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
