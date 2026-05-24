@@ -98,4 +98,15 @@ export const apps: AppManifest[] = [
     defaultSize: { w: 720, h: 720 },
     githubRepo: 'schmug/qr-me',
   },
+  {
+    id: 'mythos',
+    name: 'Mythos tracker',
+    description: 'Daily progress on vulnerabilities found by Claude Mythos Preview.',
+    icon: '🔎',
+    type: 'native',
+    component: () => import('../components/os/apps/MythosApp'),
+    defaultSize: { w: 760, h: 580 },
+    minSize: { w: 480, h: 360 },
+    allowMultiple: false,
+  },
 ];
