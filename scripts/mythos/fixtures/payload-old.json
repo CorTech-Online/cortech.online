@@ -1,9 +1,14 @@
 {
   "as_of": "2026-05-22T17:27:03Z",
+  "total_disclosed": 1000,
+  "total_acknowledged": 900,
+  "total_fixed": 90,
+  "total_cves": 80,
   "headline": {
-    "total_disclosed": 1000, "total_acknowledged": 900,
-    "total_fixed": 90, "total_cves": 80,
-    "total_candidates": 20000, "total_reviewed": 1500, "total_verified": 1300
+    "advisories": 80,
+    "analyzed": 20000,
+    "triaged": 1500,
+    "verified": 1300
   },
   "fp_rate": 0.10,
   "median_days_to_ack": 7,
@@ -16,7 +21,7 @@
     { "project": "wolfSSL", "ecosystem": "Other", "cve_ids": ["CVE-2026-0001", "CVE-2026-0002"] }
   ],
   "cve_records": [
-    { "cve_id": "CVE-2026-0001", "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" }
+    { "identifier": "CVE-2026-0001", "findings": [{ "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" }] }
   ],
   "ghsa_records": []
 }
