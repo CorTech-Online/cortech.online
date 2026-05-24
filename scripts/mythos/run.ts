@@ -7,10 +7,13 @@ import { fetchPayload } from './fetch';
 import { digest } from './digest';
 import { triggersFor } from './triggers';
 import { renderPost } from './generate';
+import type { Post } from './generate';
 import { writePostAndSnapshot } from './write';
 import type { Digest } from './types';
 
 const PAYLOAD_URL = 'https://red.anthropic.com/2026/cvd/data/payload.json';
+const MODEL = 'claude-sonnet-4-6';
+const MAX_TOKENS = 1024;
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const POSTS_DIR = join(REPO_ROOT, 'src/content/mythos');
 const SNAPSHOT_PATH = join(POSTS_DIR, '_data/snapshot.json');
@@ -35,7 +38,7 @@ async function main(): Promise<void> {
   // Bootstrap detection: very first real run has the epoch placeholder.
   const isBootstrap = oldDigest.as_of === '1970-01-01T00:00:00Z';
   if (isBootstrap) {
-    console.log(`[mythos] bootstrap: snapshot updated, no post`);
+    console.log(`[mythos] bootstrap: writing placeholder post + snapshot`);
     if (!DRY_RUN) {
       writePostAndSnapshot({
         post: bootstrapPost(),
@@ -58,8 +61,8 @@ async function main(): Promise<void> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const callLlm = async (system: string, user: string): Promise<string> => {
     const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
       system,
       messages: [{ role: 'user', content: user }],
     });
@@ -96,16 +99,16 @@ async function main(): Promise<void> {
   console.log(`[mythos] wrote post + snapshot; branch=${branch}`);
 }
 
-function bootstrapPost() {
+function bootstrapPost(): Post {
   return {
     slug: `bootstrap-${new Date().toISOString().slice(0, 10)}`,
     frontmatter: {
       title: 'Mythos tracker — bootstrap',
       description: 'First snapshot captured; future runs will be delta-driven.',
       pubDate: new Date().toISOString(),
-      triggers: [] as never[],
-      cve_ids: [] as string[],
-      projects: [] as string[],
+      triggers: [],
+      cve_ids: [],
+      projects: [],
       headline_snapshot: { disclosed: 0, acknowledged: 0, fixed: 0, advisories: 0 },
     },
     body: 'Bootstrap snapshot only. Real posts begin with the next delta.',
@@ -123,7 +126,14 @@ function bail(msg: string, code: number): never {
   process.exit(code);
 }
 
-main().catch((err) => {
-  console.error(err);
+main().catch((err: unknown) => {
+  if (err instanceof Error) {
+    console.error(`[mythos] FATAL: ${err.message}`);
+    if ('cause' in err && err.cause) console.error('  cause:', err.cause);
+    if ('draft' in err && err.draft) console.error('  draft:', err.draft);
+    if (err.stack) console.error(err.stack);
+  } else {
+    console.error('[mythos] FATAL (non-Error):', err);
+  }
   process.exit(1);
 });
