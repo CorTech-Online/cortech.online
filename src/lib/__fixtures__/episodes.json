@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "2026-05-23-daily-digest",
+    "title": "Daily Digest — May 23, 2026",
+    "description": "Sample manifest entry. Used by tests and as a fallback shape reference.",
+    "pubDate": "2026-05-23T14:00:00Z",
+    "mp3_url": "https://audio.cortech.online/2026-05-23.mp3",
+    "mp3_bytes": 4192384,
+    "duration_s": 524.6,
+    "chapters": [
+      { "title": "Intro", "start_ms": 0, "source_url": null },
+      { "title": "Sample item one", "start_ms": 18000, "source_url": "https://example.com/one" },
+      { "title": "Sample item two", "start_ms": 122000, "source_url": "https://example.com/two" },
+      { "title": "Sign-off", "start_ms": 510000, "source_url": null }
+    ],
+    "spotify_uri": "spotify:episode:fixture",
+    "cover_url": null,
+    "explicit": false
+  }
+]

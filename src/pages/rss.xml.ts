@@ -2,11 +2,13 @@ import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 import { fetchOriginalRepos } from '../lib/github';
+import { fetchEpisodes } from '../lib/episodes';
 
 export async function GET(context: APIContext) {
-  const [repos, posts] = await Promise.all([
+  const [repos, posts, episodes] = await Promise.all([
     fetchOriginalRepos('schmug'),
     getCollection('blog', ({ data }) => !data.draft),
+    fetchEpisodes(),
   ]);
 
   const repoItems = repos.map((r) => ({
@@ -25,7 +27,15 @@ export async function GET(context: APIContext) {
     categories: ['blog', ...p.data.tags],
   }));
 
-  const items = [...repoItems, ...postItems]
+  const episodeItems = episodes.map((ep) => ({
+    title: ep.title,
+    description: ep.description,
+    link: new URL(`/podcast/${ep.slug}/`, context.site!).toString(),
+    pubDate: ep.pubDate,
+    categories: ['podcast'],
+  }));
+
+  const items = [...repoItems, ...postItems, ...episodeItems]
     .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
     .slice(0, 40);
 

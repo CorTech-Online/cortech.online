@@ -1,0 +1,136 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fetchEpisodes, formatChapterTimestamp, type Episode } from '../../lib/episodes';
+
+export async function getStaticPaths() {
+  const episodes = await fetchEpisodes();
+  return episodes.map((episode) => ({
+    params: { slug: episode.slug },
+    props: { episode },
+  }));
+}
+
+type Props = { episode: Episode };
+const { episode } = Astro.props;
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const totalMs = Math.round(episode.duration_s * 1000);
+---
+
+<Base
+  title={episode.title}
+  description={episode.description}
+  canonical={`https://cortech.online/podcast/${episode.slug}`}
+>
+  <article class="mx-auto max-w-2xl px-6 pt-16 pb-16">
+    <a
+      href="/podcast"
+      class="font-mono text-[11px] tracking-[0.25em] text-[var(--color-muted)] uppercase transition hover:text-[var(--color-amber)]"
+    >
+      ← Podcast
+    </a>
+
+    <header class="mt-6">
+      <div
+        class="flex flex-wrap items-baseline gap-3 font-mono text-[10px] tracking-wider text-[var(--color-muted)] uppercase"
+      >
+        <time datetime={episode.pubDate.toISOString()}>
+          {dateFormatter.format(episode.pubDate)}
+        </time>
+        <span>{formatChapterTimestamp(totalMs)}</span>
+        <span>{episode.chapters.length} chapters</span>
+      </div>
+      <h1
+        class="mt-4 text-3xl font-[var(--font-display)] font-bold tracking-tight sm:text-4xl"
+      >
+        {episode.title}
+      </h1>
+      <p class="mt-3 text-base text-[var(--color-dim)]">{episode.description}</p>
+    </header>
+
+    <div class="mt-8">
+      <audio
+        id="episode-audio"
+        controls
+        preload="metadata"
+        src={episode.mp3_url}
+        class="w-full"
+      >
+        Your browser does not support the audio element.
+        <a href={episode.mp3_url} class="text-[var(--color-amber)] hover:underline">
+          Download the MP3
+        </a>.
+      </audio>
+    </div>
+
+    {
+      episode.chapters.length > 0 && (
+        <section class="mt-10">
+          <h2 class="font-mono text-[11px] tracking-[0.25em] text-[var(--color-amber)] uppercase">
+            Chapters
+          </h2>
+          <ol class="mt-4 divide-y divide-[var(--color-border)]">
+            {episode.chapters.map((chapter) => (
+              <li class="flex items-baseline gap-4 py-3">
+                <button
+                  type="button"
+                  data-start-ms={chapter.start_ms}
+                  class="chapter-jump shrink-0 font-mono text-xs tabular-nums text-[var(--color-muted)] transition hover:text-[var(--color-amber)]"
+                  aria-label={`Jump to ${chapter.title}`}
+                >
+                  {formatChapterTimestamp(chapter.start_ms)}
+                </button>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-[var(--color-text)]">{chapter.title}</p>
+                  {chapter.source_url && (
+                    <a
+                      href={chapter.source_url}
+                      rel="noopener"
+                      class="mt-0.5 inline-block truncate text-xs text-[var(--color-dim)] hover:text-[var(--color-amber)]"
+                    >
+                      {chapter.source_url}
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
+      episode.spotify_uri && (
+        <p class="mt-10 text-xs text-[var(--color-muted)]">
+          Also on Spotify:{' '}
+          <a
+            href={`https://open.spotify.com/episode/${episode.spotify_uri.replace('spotify:episode:', '')}`}
+            rel="noopener"
+            class="text-[var(--color-amber)] hover:underline"
+          >
+            {episode.spotify_uri}
+          </a>
+        </p>
+      )
+    }
+  </article>
+
+  <script>
+    document.querySelectorAll<HTMLButtonElement>('.chapter-jump').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const audio = document.getElementById('episode-audio') as HTMLAudioElement | null;
+        if (!audio) return;
+        const ms = Number(btn.dataset.startMs ?? 0);
+        audio.currentTime = ms / 1000;
+        audio.play().catch(() => {
+          // Autoplay can be blocked; the seek still happened, that's the important part.
+        });
+      });
+    });
+  </script>
+</Base>

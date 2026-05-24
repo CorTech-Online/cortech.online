@@ -18,8 +18,23 @@ type FakePost = {
   };
 };
 
+type FakeEpisode = {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  mp3_url: string;
+  mp3_bytes: number;
+  duration_s: number;
+  chapters: { title: string; start_ms: number; source_url?: string | null }[];
+  spotify_uri: string | null;
+  cover_url: string | null;
+  explicit: boolean;
+};
+
 const reposRef: { current: FakeRepo[] } = { current: [] };
 const postsRef: { current: FakePost[] } = { current: [] };
+const episodesRef: { current: FakeEpisode[] } = { current: [] };
 
 vi.mock('astro:content', () => ({
   // Mirror Astro's getCollection signature: optional filter that receives the entry.
@@ -29,6 +44,10 @@ vi.mock('astro:content', () => ({
 
 vi.mock('../lib/github', () => ({
   fetchOriginalRepos: async () => reposRef.current,
+}));
+
+vi.mock('../lib/episodes', () => ({
+  fetchEpisodes: async () => episodesRef.current,
 }));
 
 import { GET } from './rss.xml';
@@ -58,6 +77,7 @@ function listTitles(xml: string): string[] {
 beforeEach(() => {
   reposRef.current = [];
   postsRef.current = [];
+  episodesRef.current = [];
 });
 
 describe('rss.xml route', () => {
@@ -187,5 +207,49 @@ describe('rss.xml route', () => {
     const xml = await getXml();
     expect(xml).toContain('<category>blog</category>');
     expect(xml).toContain('<category>cortechos</category>');
+  });
+
+  it('includes podcast episodes in the unified feed sorted with posts and repos', async () => {
+    reposRef.current = [
+      {
+        name: 'older-repo',
+        description: 'old',
+        html_url: 'https://github.com/schmug/older-repo',
+        updated_at: '2026-04-01T00:00:00Z',
+      },
+    ];
+    postsRef.current = [
+      {
+        id: 'middle-post',
+        data: {
+          title: 'Middle Post',
+          description: 'in between',
+          pubDate: new Date('2026-04-10T00:00:00Z'),
+          tags: [],
+          draft: false,
+        },
+      },
+    ];
+    episodesRef.current = [
+      {
+        slug: 'newest-episode',
+        title: 'Newest Episode',
+        description: 'fresh',
+        pubDate: new Date('2026-04-20T00:00:00Z'),
+        mp3_url: 'https://audio.cortech.online/newest.mp3',
+        mp3_bytes: 1000,
+        duration_s: 100,
+        chapters: [],
+        spotify_uri: null,
+        cover_url: null,
+        explicit: false,
+      },
+    ];
+
+    const xml = await getXml();
+    expect(countItems(xml)).toBe(3);
+    expect(listTitles(xml)).toEqual(['Newest Episode', 'Middle Post', 'older-repo']);
+    expect(xml).toContain('https://cortech.online/podcast/newest-episode/');
+    expect(xml).toContain('<category>podcast</category>');
   });
 });

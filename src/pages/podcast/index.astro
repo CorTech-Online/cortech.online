@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fetchEpisodes, formatChapterTimestamp } from '../../lib/episodes';
+
+const episodes = await fetchEpisodes();
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<Base
+  title="Podcast"
+  description="Daily Digest — a daily AI-narrated digest of links worth your morning. By Cory Schmug."
+  canonical="https://cortech.online/podcast"
+>
+  <section class="mx-auto max-w-2xl px-6 pt-16 pb-10">
+    <div>
+      <p class="font-mono text-[11px] tracking-[0.35em] text-[var(--color-amber)] uppercase">
+        Podcast
+      </p>
+      <h1 class="mt-2 text-3xl font-[var(--font-display)] font-bold tracking-tight sm:text-4xl">
+        Daily Digest
+      </h1>
+      <p class="mt-3 max-w-xl text-sm text-[var(--color-muted)]">
+        AI-narrated daily walk through the links in my morning queue. Subscribe via the
+        <a href="/podcast/rss.xml" class="text-[var(--color-amber)] hover:underline">podcast feed</a>
+        or listen on
+        <a
+          href="https://open.spotify.com/show/"
+          rel="noopener"
+          class="text-[var(--color-amber)] hover:underline"
+        >
+          Spotify
+        </a>.
+      </p>
+    </div>
+
+    {
+      episodes.length === 0 ? (
+        <p class="mt-12 rounded-md border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-6 text-sm text-[var(--color-muted)]">
+          No episodes published yet — the manifest at <code>EPISODES_MANIFEST_URL</code> is
+          empty or unset. Check back soon.
+        </p>
+      ) : (
+        <ul class="mt-10 divide-y divide-[var(--color-border)]">
+          {episodes.map((ep) => (
+            <li class="py-5">
+              <a
+                href={`/podcast/${ep.slug}/`}
+                class="group block transition hover:text-[var(--color-amber)]"
+              >
+                <div class="flex items-baseline gap-3 font-mono text-[10px] tracking-wider text-[var(--color-muted)] uppercase">
+                  <time datetime={ep.pubDate.toISOString()}>
+                    {dateFormatter.format(ep.pubDate)}
+                  </time>
+                  <span>{formatChapterTimestamp(Math.round(ep.duration_s * 1000))}</span>
+                  <span>{ep.chapters.length} chapters</span>
+                </div>
+                <h2 class="mt-1 text-xl font-[var(--font-display)] font-semibold text-[var(--color-text)] group-hover:text-[var(--color-amber)]">
+                  {ep.title}
+                </h2>
+                <p class="mt-1 text-sm text-[var(--color-dim)]">{ep.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>
