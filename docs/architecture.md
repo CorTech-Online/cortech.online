@@ -140,3 +140,14 @@ src/
 - **Window-relative units come from the store, not from CSS.** Resizing a window updates `w`/`h` in the store; react-rnd reads them as props. Don't try to drive sizes from CSS or you'll desync the layout.
 - **Iframe apps must be served from a publicly framable origin.** When adding one, run `npm run test:e2e` — the iframe-embed suite surfaces XFO/CSP refusals.
 - **`useOS.getState()` outside React is fine** for one-shot side effects (e.g. the first-visit About auto-open in `OSShell.tsx`). Don't subscribe via `getState` — use the hook.
+
+## Mythos tracker
+
+A scheduled workflow (`.github/workflows/mythos.yml`) runs daily at 19:00 UTC. It diffs Anthropic's CVD payload against `src/content/mythos/_data/snapshot.json` and, when meaningful deltas fire, generates a post via the Anthropic SDK, writes it to `src/content/mythos/`, and opens an auto-merge PR.
+
+- All logic lives in `scripts/mythos/*.ts`; the YAML is thin.
+- Pure modules (`digest.ts`, `triggers.ts`, `generate.ts` guardrails) are unit-tested with vitest.
+- `claude-sonnet-4-6` is the default model; cost is roughly cents per delta day.
+- Slop guardrails (in `generate.ts`) reject hallucinated CVE IDs, missing required CVEs, and out-of-band word counts. A guardrail failure opens a GitHub issue instead of merging a bad post.
+- `ANTHROPIC_API_KEY` must be set in repo Settings → Secrets → Actions.
+- Spec: [`docs/superpowers/specs/2026-05-24-mythos-tracker-design.md`](./superpowers/specs/2026-05-24-mythos-tracker-design.md). Plan: [`docs/superpowers/plans/2026-05-24-mythos-tracker.md`](./superpowers/plans/2026-05-24-mythos-tracker.md).
