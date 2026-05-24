@@ -74,8 +74,8 @@ Committed at `src/content/mythos/_data/snapshot.json`. Small, diff-friendly, suf
 
 ```jsonc
 {
-  "as_of": "2026-05-22T17:27:03Z",          // from payload.as_of
-  "fetched_at": "2026-05-24T19:00:00Z",     // when our cron ran
+  "as_of": "2026-05-22T17:27:03Z", // from payload.as_of
+  "fetched_at": "2026-05-24T19:00:00Z", // when our cron ran
   "headline": {
     "disclosed": 1596,
     "acknowledged": 1451,
@@ -83,17 +83,17 @@ Committed at `src/content/mythos/_data/snapshot.json`. Small, diff-friendly, suf
     "advisories": 88,
     "candidates": 23019,
     "reviewed": 1900,
-    "verified": 1726
+    "verified": 1726,
   },
   "rates": {
     "true_positive_pct": 90.8,
     "median_days_to_ack": 7,
-    "median_days_to_patch": 21
+    "median_days_to_patch": 21,
   },
   "by_bug_class": { "heap-buffer-overflow": 162, "...": 0 },
   "by_ecosystem": { "Other": { "critical": 4, "high": 14, "medium": 8, "low": 0, "unknown": 0 } },
-  "project_names": ["wolfSSL", "..."],         // sorted; for "new project" detection
-  "revealed_cve_ids": ["CVE-2026-5446", "..."] // sorted; for "newly revealed" detection
+  "project_names": ["wolfSSL", "..."], // sorted; for "new project" detection
+  "revealed_cve_ids": ["CVE-2026-5446", "..."], // sorted; for "newly revealed" detection
 }
 ```
 
@@ -106,8 +106,13 @@ type Trigger =
   | { kind: 'revealed'; cve_id: string; project: string; bug_class: string; ecosystem: string }
   | { kind: 'new_project'; project: string; ecosystem: string; first_cves: string[] }
   | { kind: 'bug_class_shift'; bug_class: string; delta: number; pct_change: number }
-  | { kind: 'funnel_shift'; metric: 'tp_rate' | 'days_to_ack' | 'days_to_patch';
-                            from: number; to: number; pct_change: number };
+  | {
+      kind: 'funnel_shift';
+      metric: 'tp_rate' | 'days_to_ack' | 'days_to_patch';
+      from: number;
+      to: number;
+      pct_change: number;
+    };
 ```
 
 Concrete thresholds (centralised in `triggers.ts` so they're easy to tune):
@@ -128,6 +133,7 @@ Model: Claude Sonnet 4.6 (`claude-sonnet-4-6`). Cheap and capable enough for thi
 System prompt persona: "security-news tracker, not a hype outlet." Output is strict frontmatter + markdown body, ≤350 words, cites the source dashboard in a footer line, no speculation beyond payload data.
 
 Input context to the API call:
+
 1. The triggers array (with project, bug_class, CVE IDs, deltas)
 2. The current digest (so the model can give 1-sentence context: "this is the Nth heap-buffer-overflow in $project")
 3. Yesterday's headline numbers (for delta phrasing)
@@ -191,13 +197,13 @@ name: Mythos tracker
 
 on:
   schedule:
-    - cron: '0 19 * * *'   # 2pm EST / 3pm EDT
+    - cron: '0 19 * * *' # 2pm EST / 3pm EDT
   workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
-  issues: write              # for guardrail-failure fallback
+  issues: write # for guardrail-failure fallback
 
 jobs:
   generate:
@@ -223,14 +229,14 @@ jobs:
 
 ## Error handling
 
-| Failure mode | Behaviour |
-| --- | --- |
-| Fetch non-200 / timeout / malformed JSON | Workflow fails loudly, no commit, no PR |
-| Snapshot missing (first run) | Bootstrap mode — write snapshot only, no post |
-| Claude API failure | Retry once with backoff, then fail the workflow |
-| Slop guardrail fails | Open GitHub issue with draft + triggers, fail the workflow |
-| Multiple workflow runs same day | Idempotent — branch name includes date; second run sees snapshot already matches and exits |
-| Anthropic dashboard hasn't updated | `new.as_of == old.as_of` → exit 0 without committing |
+| Failure mode                             | Behaviour                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Fetch non-200 / timeout / malformed JSON | Workflow fails loudly, no commit, no PR                                                    |
+| Snapshot missing (first run)             | Bootstrap mode — write snapshot only, no post                                              |
+| Claude API failure                       | Retry once with backoff, then fail the workflow                                            |
+| Slop guardrail fails                     | Open GitHub issue with draft + triggers, fail the workflow                                 |
+| Multiple workflow runs same day          | Idempotent — branch name includes date; second run sees snapshot already matches and exits |
+| Anthropic dashboard hasn't updated       | `new.as_of == old.as_of` → exit 0 without committing                                       |
 
 ## Testing
 

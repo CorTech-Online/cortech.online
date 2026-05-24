@@ -168,8 +168,6 @@ export function deriveSlug(now: Date, triggers: Trigger[]): string {
     const cve = revealed[0].cve_id.toLowerCase();
     return `${date}-${project}-${cve}`;
   }
-  const weekday = now
-    .toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' })
-    .toLowerCase();
+  const weekday = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' }).toLowerCase();
   return `${date}-mythos-${weekday}`;
 }

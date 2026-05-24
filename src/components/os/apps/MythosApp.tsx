@@ -116,7 +116,7 @@ export default function MythosApp() {
               ).map(([label, n]) => (
                 <div key={label} className="rounded border border-[var(--color-border)] p-3">
                   <div className="text-xl font-semibold">{n}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
+                  <div className="text-[10px] tracking-wider text-[var(--color-muted)] uppercase">
                     {label}
                   </div>
                 </div>

@@ -15,6 +15,7 @@
 ## File map
 
 **Created:**
+
 - `scripts/mythos/run.ts` — entry point, orchestrates the pipeline
 - `scripts/mythos/fetch.ts` — HTTP with timeout
 - `scripts/mythos/digest.ts` — raw payload → snapshot digest
@@ -38,6 +39,7 @@
 - `.github/workflows/mythos.yml` — cron + auto-merge
 
 **Modified:**
+
 - `src/content.config.ts` — add `mythos` collection
 - `src/apps/registry.ts` — add `mythos` AppManifest entry
 - `package.json` — add `tsx` + `@anthropic-ai/sdk` deps, `mythos:run` script
@@ -50,12 +52,14 @@
 ## Task 1: Add `tsx`, Anthropic SDK, and the `mythos:run` script
 
 **Files:**
+
 - Modify: `package.json`
 - Verify: `node --version` (must be ≥22.12 per `engines`)
 
 - [ ] **Step 1: Install runtime deps**
 
 Run:
+
 ```bash
 npm install --save-dev tsx
 npm install @anthropic-ai/sdk
@@ -64,6 +68,7 @@ npm install @anthropic-ai/sdk
 - [ ] **Step 2: Add the `mythos:run` script**
 
 Edit `package.json`, add inside `scripts`:
+
 ```json
 "mythos:run": "tsx scripts/mythos/run.ts"
 ```
@@ -85,6 +90,7 @@ git commit -m "chore(mythos): add tsx and anthropic SDK for tracker scripts"
 ## Task 2: Add the `mythos` content collection + bootstrap empty state
 
 **Files:**
+
 - Create: `src/content/mythos/.gitkeep`
 - Create: `src/content/mythos/_data/snapshot.json`
 - Modify: `src/content.config.ts`
@@ -92,6 +98,7 @@ git commit -m "chore(mythos): add tsx and anthropic SDK for tracker scripts"
 - [ ] **Step 1: Write a failing test for the collection schema**
 
 Create `src/test/mythos-collection.test.ts`:
+
 ```ts
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
@@ -148,6 +155,7 @@ Expected: 2 tests pass. (This task just locks the schema contract; the next step
 - [ ] **Step 3: Add the collection to `src/content.config.ts`**
 
 Replace the contents of `src/content.config.ts` with:
+
 ```ts
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
@@ -191,13 +199,19 @@ export const collections = { blog, mythos };
 Create `src/content/mythos/.gitkeep` (empty).
 
 Create `src/content/mythos/_data/snapshot.json`:
+
 ```json
 {
   "as_of": "1970-01-01T00:00:00Z",
   "fetched_at": "1970-01-01T00:00:00Z",
   "headline": {
-    "disclosed": 0, "acknowledged": 0, "fixed": 0, "advisories": 0,
-    "candidates": 0, "reviewed": 0, "verified": 0
+    "disclosed": 0,
+    "acknowledged": 0,
+    "fixed": 0,
+    "advisories": 0,
+    "candidates": 0,
+    "reviewed": 0,
+    "verified": 0
   },
   "rates": { "true_positive_pct": 0, "median_days_to_ack": 0, "median_days_to_patch": 0 },
   "by_bug_class": {},
@@ -226,11 +240,13 @@ git commit -m "feat(mythos): add content collection schema and bootstrap snapsho
 ## Task 3: Define shared types
 
 **Files:**
+
 - Create: `scripts/mythos/types.ts`
 
 - [ ] **Step 1: Write the types**
 
 Create `scripts/mythos/types.ts`:
+
 ```ts
 export type SeverityBucket = {
   critical: number;
@@ -293,6 +309,7 @@ git commit -m "feat(mythos): add Digest and Trigger types"
 ## Task 4: Fixtures — `payload-old.json` and `payload-new.json`
 
 **Files:**
+
 - Create: `scripts/mythos/fixtures/payload-old.json`
 - Create: `scripts/mythos/fixtures/payload-new.json`
 
@@ -301,15 +318,20 @@ These are hand-crafted minimal fixtures shaped like the real payload, but small 
 - [ ] **Step 1: Create the old fixture**
 
 Create `scripts/mythos/fixtures/payload-old.json`:
+
 ```json
 {
   "as_of": "2026-05-22T17:27:03Z",
   "headline": {
-    "total_disclosed": 1000, "total_acknowledged": 900,
-    "total_fixed": 90, "total_cves": 80,
-    "total_candidates": 20000, "total_reviewed": 1500, "total_verified": 1300
+    "total_disclosed": 1000,
+    "total_acknowledged": 900,
+    "total_fixed": 90,
+    "total_cves": 80,
+    "total_candidates": 20000,
+    "total_reviewed": 1500,
+    "total_verified": 1300
   },
-  "fp_rate": 0.10,
+  "fp_rate": 0.1,
   "median_days_to_ack": 7,
   "median_days_to_patch": 21,
   "by_bug_class": { "heap-buffer-overflow": 100, "xss": 40 },
@@ -320,7 +342,12 @@ Create `scripts/mythos/fixtures/payload-old.json`:
     { "project": "wolfSSL", "ecosystem": "Other", "cve_ids": ["CVE-2026-0001", "CVE-2026-0002"] }
   ],
   "cve_records": [
-    { "cve_id": "CVE-2026-0001", "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" }
+    {
+      "cve_id": "CVE-2026-0001",
+      "project": "wolfSSL",
+      "bug_class": "heap-buffer-overflow",
+      "ecosystem": "Other"
+    }
   ],
   "ghsa_records": []
 }
@@ -329,13 +356,18 @@ Create `scripts/mythos/fixtures/payload-old.json`:
 - [ ] **Step 2: Create the new fixture**
 
 Create `scripts/mythos/fixtures/payload-new.json`:
+
 ```json
 {
   "as_of": "2026-05-23T17:27:03Z",
   "headline": {
-    "total_disclosed": 1010, "total_acknowledged": 910,
-    "total_fixed": 92, "total_cves": 82,
-    "total_candidates": 20050, "total_reviewed": 1520, "total_verified": 1320
+    "total_disclosed": 1010,
+    "total_acknowledged": 910,
+    "total_fixed": 92,
+    "total_cves": 82,
+    "total_candidates": 20050,
+    "total_reviewed": 1520,
+    "total_verified": 1320
   },
   "fp_rate": 0.05,
   "median_days_to_ack": 7,
@@ -349,14 +381,25 @@ Create `scripts/mythos/fixtures/payload-new.json`:
     { "project": "curl", "ecosystem": "Other", "cve_ids": ["CVE-2026-9001"] }
   ],
   "cve_records": [
-    { "cve_id": "CVE-2026-0001", "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" },
-    { "cve_id": "CVE-2026-0002", "project": "wolfSSL", "bug_class": "use-after-free", "ecosystem": "Other" }
+    {
+      "cve_id": "CVE-2026-0001",
+      "project": "wolfSSL",
+      "bug_class": "heap-buffer-overflow",
+      "ecosystem": "Other"
+    },
+    {
+      "cve_id": "CVE-2026-0002",
+      "project": "wolfSSL",
+      "bug_class": "use-after-free",
+      "ecosystem": "Other"
+    }
   ],
   "ghsa_records": []
 }
 ```
 
 The deltas this fixture produces:
+
 - **revealed**: `CVE-2026-0002` is newly in `cve_records`
 - **new_project**: `curl` appears for the first time
 - **bug_class_shift**: `heap-buffer-overflow` 100 → 130 (delta 30, +30%)
@@ -374,12 +417,14 @@ git commit -m "test(mythos): add hand-crafted payload fixtures for trigger tests
 ## Task 5: `digest.ts` (pure)
 
 **Files:**
+
 - Create: `scripts/mythos/digest.ts`
 - Test: `scripts/mythos/digest.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
 Create `scripts/mythos/digest.test.ts`:
+
 ```ts
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -439,6 +484,7 @@ Expected: FAIL with "Cannot find module './digest'".
 - [ ] **Step 3: Implement `digest.ts`**
 
 Create `scripts/mythos/digest.ts`:
+
 ```ts
 import type { Digest, SeverityBucket } from './types';
 
@@ -510,12 +556,14 @@ git commit -m "feat(mythos): pure digest function maps raw payload to snapshot"
 ## Task 6: `triggers.ts` (pure)
 
 **Files:**
+
 - Create: `scripts/mythos/triggers.ts`
 - Test: `scripts/mythos/triggers.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
 Create `scripts/mythos/triggers.test.ts`:
+
 ```ts
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -607,6 +655,7 @@ Expected: FAIL with "Cannot find module './triggers'".
 - [ ] **Step 3: Implement `triggers.ts`**
 
 Create `scripts/mythos/triggers.ts`:
+
 ```ts
 import type { Digest, Trigger } from './types';
 
@@ -685,6 +734,7 @@ export function triggersFor(oldD: Digest, newD: Digest, newRaw?: RawForRevealed)
 
 Run: `npx vitest run scripts/mythos/triggers.test.ts`
 Expected: 7 tests pass. If `triggers.test.ts` references `triggersFor(oldD, newD)` without the third arg and expects enriched revealed fields, the test will need the raw payload passed too — update the calls in the "detects newly revealed CVEs" and "detects new projects" tests to pass `loadRaw('new')` as the third argument. Add this helper at the top of the test file:
+
 ```ts
 function loadRaw(name: 'old' | 'new') {
   return JSON.parse(
@@ -695,6 +745,7 @@ function loadRaw(name: 'old' | 'new') {
   );
 }
 ```
+
 and change the two relevant assertions to `triggersFor(loadDigest('old'), loadDigest('new'), loadRaw('new'))`.
 
 - [ ] **Step 5: Commit**
@@ -709,12 +760,14 @@ git commit -m "feat(mythos): pure trigger detection with tunable thresholds"
 ## Task 7: `fetch.ts` — bounded HTTP
 
 **Files:**
+
 - Create: `scripts/mythos/fetch.ts`
 - Test: `scripts/mythos/fetch.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
 Create `scripts/mythos/fetch.test.ts`:
+
 ```ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchPayload, FetchError } from './fetch';
@@ -759,6 +812,7 @@ Expected: FAIL with "Cannot find module './fetch'".
 - [ ] **Step 3: Implement `fetch.ts`**
 
 Create `scripts/mythos/fetch.ts`:
+
 ```ts
 export class FetchError extends Error {
   constructor(
@@ -809,12 +863,14 @@ git commit -m "feat(mythos): bounded HTTP fetch with timeout and typed errors"
 > **Before implementing**, invoke the `claude-api` skill if available — it covers Anthropic SDK best practices (prompt caching, model ID conventions, error handling). Default model: `claude-sonnet-4-6`.
 
 **Files:**
+
 - Create: `scripts/mythos/generate.ts`
 - Test: `scripts/mythos/generate.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
 Create `scripts/mythos/generate.test.ts`:
+
 ```ts
 import { describe, expect, it, vi } from 'vitest';
 import { renderPost, GenerationError, deriveSlug } from './generate';
@@ -824,8 +880,13 @@ const oldDigest: Digest = {
   as_of: '2026-05-22T00:00:00Z',
   fetched_at: '2026-05-23T19:00:00Z',
   headline: {
-    disclosed: 1000, acknowledged: 900, fixed: 90, advisories: 80,
-    candidates: 20000, reviewed: 1500, verified: 1300,
+    disclosed: 1000,
+    acknowledged: 900,
+    fixed: 90,
+    advisories: 80,
+    candidates: 20000,
+    reviewed: 1500,
+    verified: 1300,
   },
   rates: { true_positive_pct: 90, median_days_to_ack: 7, median_days_to_patch: 21 },
   by_bug_class: { 'heap-buffer-overflow': 100 },
@@ -855,10 +916,12 @@ const allKnownCves = ['CVE-2026-0001', 'CVE-2026-0002'];
 
 describe('renderPost()', () => {
   it('passes when guardrails are satisfied', async () => {
-    const callLlm = vi.fn().mockResolvedValue(
-      `wolfSSL CVE-2026-0002 is a newly revealed use-after-free vulnerability discovered by ` +
-        `Mythos Preview. It joins ${'detail '.repeat(40)}.`,
-    );
+    const callLlm = vi
+      .fn()
+      .mockResolvedValue(
+        `wolfSSL CVE-2026-0002 is a newly revealed use-after-free vulnerability discovered by ` +
+          `Mythos Preview. It joins ${'detail '.repeat(40)}.`,
+      );
     const post = await renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm });
     expect(post.body).toContain('CVE-2026-0002');
     expect(post.frontmatter.cve_ids).toContain('CVE-2026-0002');
@@ -879,12 +942,8 @@ describe('renderPost()', () => {
   it('rejects hallucinated CVE ids', async () => {
     const callLlm = vi
       .fn()
-      .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`,
-      )
-      .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`,
-      );
+      .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`)
+      .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(40)}.`);
     await expect(
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
     ).rejects.toThrow(GenerationError);
@@ -937,6 +996,7 @@ Expected: FAIL with "Cannot find module './generate'".
 - [ ] **Step 3: Implement `generate.ts`**
 
 Create `scripts/mythos/generate.ts`:
+
 ```ts
 import type { Digest, Trigger } from './types';
 
@@ -1059,9 +1119,13 @@ function buildUserPrompt(oldD: Digest, newD: Digest, triggers: Trigger[]): strin
 }
 
 function deriveTitle(triggers: Trigger[]): string {
-  const revealed = triggers.find((t): t is Extract<Trigger, { kind: 'revealed' }> => t.kind === 'revealed');
+  const revealed = triggers.find(
+    (t): t is Extract<Trigger, { kind: 'revealed' }> => t.kind === 'revealed',
+  );
   if (revealed) return `${revealed.project} ${revealed.cve_id}: ${revealed.bug_class}`;
-  const np = triggers.find((t): t is Extract<Trigger, { kind: 'new_project' }> => t.kind === 'new_project');
+  const np = triggers.find(
+    (t): t is Extract<Trigger, { kind: 'new_project' }> => t.kind === 'new_project',
+  );
   if (np) return `Mythos adds ${np.project} to the disclosure list`;
   return `Mythos tracker update`;
 }
@@ -1116,12 +1180,14 @@ git commit -m "feat(mythos): post generator with hallucination + length guardrai
 ## Task 9: `write.ts` — write files to working tree
 
 **Files:**
+
 - Create: `scripts/mythos/write.ts`
 - Test: `scripts/mythos/write.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
 Create `scripts/mythos/write.test.ts`:
+
 ```ts
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mkdtempSync, readFileSync, rmSync, existsSync } from 'node:fs';
@@ -1158,8 +1224,13 @@ describe('writePostAndSnapshot()', () => {
     as_of: '2026-05-23T00:00:00Z',
     fetched_at: '2026-05-24T19:00:00Z',
     headline: {
-      disclosed: 1010, acknowledged: 910, fixed: 92, advisories: 82,
-      candidates: 0, reviewed: 0, verified: 0,
+      disclosed: 1010,
+      acknowledged: 910,
+      fixed: 92,
+      advisories: 82,
+      candidates: 0,
+      reviewed: 0,
+      verified: 0,
     },
     rates: { true_positive_pct: 95, median_days_to_ack: 7, median_days_to_patch: 21 },
     by_bug_class: {},
@@ -1200,6 +1271,7 @@ Expected: FAIL with "Cannot find module './write'".
 - [ ] **Step 3: Implement `write.ts`**
 
 Create `scripts/mythos/write.ts`:
+
 ```ts
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -1263,6 +1335,7 @@ git commit -m "feat(mythos): write post + snapshot to working tree"
 ## Task 10: `run.ts` — pipeline orchestrator
 
 **Files:**
+
 - Create: `scripts/mythos/run.ts`
 
 This is the only step without a vitest test — its integration is exercised end-to-end via `workflow_dispatch` in Task 14.
@@ -1270,6 +1343,7 @@ This is the only step without a vitest test — its integration is exercised end
 - [ ] **Step 1: Implement `run.ts`**
 
 Create `scripts/mythos/run.ts`:
+
 ```ts
 #!/usr/bin/env node
 import Anthropic from '@anthropic-ai/sdk';
@@ -1326,7 +1400,10 @@ async function main(): Promise<void> {
     console.log(`[mythos] no triggers fired; exiting cleanly`);
     return;
   }
-  console.log(`[mythos] ${triggers.length} triggers fired:`, triggers.map((t) => t.kind));
+  console.log(
+    `[mythos] ${triggers.length} triggers fired:`,
+    triggers.map((t) => t.kind),
+  );
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const callLlm = async (system: string, user: string): Promise<string> => {
@@ -1421,12 +1498,14 @@ git commit -m "feat(mythos): orchestrator wires fetch, digest, triggers, generat
 ## Task 11: `/api/mythos.json` endpoint + dashboard page
 
 **Files:**
+
 - Create: `src/pages/api/mythos.json.ts`
 - Create: `src/pages/mythos/index.astro`
 
 - [ ] **Step 1: Implement the JSON endpoint**
 
 Create `src/pages/api/mythos.json.ts`:
+
 ```ts
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
@@ -1460,6 +1539,7 @@ export const prerender = true;
 - [ ] **Step 2: Implement the dashboard page**
 
 Create `src/pages/mythos/index.astro`:
+
 ```astro
 ---
 import { getCollection } from 'astro:content';
@@ -1471,7 +1551,9 @@ const posts = (await getCollection('mythos')).sort(
 );
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric', month: 'short', day: 'numeric',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
 });
 
 const topBugClasses = Object.entries(snapshot.by_bug_class)
@@ -1492,46 +1574,63 @@ const topBugClasses = Object.entries(snapshot.by_bug_class)
       Vulnerabilities found by Mythos Preview
     </h1>
     <p class="mt-3 max-w-xl text-sm text-[var(--color-muted)]">
-      Delta-driven daily summaries of <a href="https://red.anthropic.com/2026/cvd/" class="text-[var(--color-amber)] hover:underline">Anthropic's CVD dashboard</a>.
-      Snapshot as of {snapshot.as_of}.
+      Delta-driven daily summaries of <a
+        href="https://red.anthropic.com/2026/cvd/"
+        class="text-[var(--color-amber)] hover:underline">Anthropic's CVD dashboard</a
+      >. Snapshot as of {snapshot.as_of}.
     </p>
 
     <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-      {[
-        ['Disclosed', snapshot.headline.disclosed],
-        ['Acknowledged', snapshot.headline.acknowledged],
-        ['Patched', snapshot.headline.fixed],
-        ['Advisories', snapshot.headline.advisories],
-      ].map(([label, n]) => (
-        <div class="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-4">
-          <div class="text-2xl font-bold">{n}</div>
-          <div class="text-xs text-[var(--color-muted)] uppercase tracking-wide">{label}</div>
-        </div>
-      ))}
+      {
+        [
+          ['Disclosed', snapshot.headline.disclosed],
+          ['Acknowledged', snapshot.headline.acknowledged],
+          ['Patched', snapshot.headline.fixed],
+          ['Advisories', snapshot.headline.advisories],
+        ].map(([label, n]) => (
+          <div class="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-4">
+            <div class="text-2xl font-bold">{n}</div>
+            <div class="text-xs tracking-wide text-[var(--color-muted)] uppercase">{label}</div>
+          </div>
+        ))
+      }
     </div>
 
     <h2 class="mt-10 text-lg font-semibold">Top bug classes</h2>
     <ul class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-      {topBugClasses.map(([k, n]) => (
-        <li class="flex justify-between border-b border-[var(--color-border)]/40 py-1">
-          <span class="font-mono text-xs">{k}</span><span>{n}</span>
-        </li>
-      ))}
+      {
+        topBugClasses.map(([k, n]) => (
+          <li class="flex justify-between border-b border-[var(--color-border)]/40 py-1">
+            <>
+              <span class="font-mono text-xs">{k}</span>
+              <span>{n}</span>
+            </>
+          </li>
+        ))
+      }
     </ul>
 
     <h2 class="mt-10 text-lg font-semibold">Recent posts</h2>
-    {posts.length === 0 ? (
-      <p class="mt-3 text-sm text-[var(--color-muted)]">No posts yet — first delta will start the stream.</p>
-    ) : (
-      <ul class="mt-2 space-y-3">
-        {posts.slice(0, 10).map((p) => (
-          <li>
-            <a href={`/mythos/${p.id}/`} class="text-[var(--color-amber)] hover:underline">{p.data.title}</a>
-            <span class="ml-2 text-xs text-[var(--color-muted)]">{dateFormatter.format(p.data.pubDate)}</span>
-          </li>
-        ))}
-      </ul>
-    )}
+    {
+      posts.length === 0 ? (
+        <p class="mt-3 text-sm text-[var(--color-muted)]">
+          No posts yet — first delta will start the stream.
+        </p>
+      ) : (
+        <ul class="mt-2 space-y-3">
+          {posts.slice(0, 10).map((p) => (
+            <li>
+              <a href={`/mythos/${p.id}/`} class="text-[var(--color-amber)] hover:underline">
+                {p.data.title}
+              </a>
+              <span class="ml-2 text-xs text-[var(--color-muted)]">
+                {dateFormatter.format(p.data.pubDate)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </section>
 </Base>
 ```
@@ -1553,12 +1652,14 @@ git commit -m "feat(mythos): dashboard page and JSON endpoint"
 ## Task 12: Individual post route + RSS feed
 
 **Files:**
+
 - Create: `src/pages/mythos/[...slug].astro`
 - Create: `src/pages/mythos/rss.xml.ts`
 
 - [ ] **Step 1: Implement the post route**
 
 Create `src/pages/mythos/[...slug].astro`:
+
 ```astro
 ---
 import { getCollection, render } from 'astro:content';
@@ -1573,7 +1674,9 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric', month: 'short', day: 'numeric',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
 });
 ---
 
@@ -1582,7 +1685,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   description={post.data.description}
   canonical={`https://cortech.online/mythos/${post.id}`}
 >
-  <article class="mx-auto max-w-2xl px-6 pt-16 pb-10 prose prose-invert">
+  <article class="prose prose-invert mx-auto max-w-2xl px-6 pt-16 pb-10">
     <p class="font-mono text-[11px] tracking-[0.35em] text-[var(--color-amber)] uppercase">
       Mythos tracker · {dateFormatter.format(post.data.pubDate)}
     </p>
@@ -1595,6 +1698,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 - [ ] **Step 2: Implement the RSS feed**
 
 Create `src/pages/mythos/rss.xml.ts`:
+
 ```ts
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
@@ -1639,12 +1743,14 @@ git commit -m "feat(mythos): per-post route and dedicated RSS feed"
 ## Task 13: `MythosApp.tsx` + registry entry
 
 **Files:**
+
 - Create: `src/components/os/apps/MythosApp.tsx`
 - Modify: `src/apps/registry.ts`
 
 - [ ] **Step 1: Implement `MythosApp.tsx`**
 
 Create `src/components/os/apps/MythosApp.tsx` — mirroring `BlogApp.tsx`'s fetch-and-cache pattern:
+
 ```tsx
 import { useEffect, useState } from 'react';
 
@@ -1668,7 +1774,9 @@ let fetchPromise: Promise<MythosPayload> | null = null;
 let cachedPayload: MythosPayload | null = null;
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric', month: 'short', day: 'numeric',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
 });
 
 export default function MythosApp() {
@@ -1692,21 +1800,29 @@ export default function MythosApp() {
         });
     }
     fetchPromise
-      .then((data) => { if (!cancelled) setPayload(data); })
-      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'failed'); });
+      .then((data) => {
+        if (!cancelled) setPayload(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'failed');
+      });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (error) return <div class="p-6 text-sm text-red-400">Failed to load: {error}</div>;
   if (!payload) return <div class="p-6 text-sm text-[var(--color-muted)]">Loading…</div>;
 
   const { snapshot, posts } = payload;
-  const topBugClasses = Object.entries(snapshot.by_bug_class).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const topBugClasses = Object.entries(snapshot.by_bug_class)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
 
   return (
     <div class="overflow-y-auto p-6">
-      <p class="text-xs uppercase tracking-widest text-[var(--color-amber)]">Mythos tracker</p>
+      <p class="text-xs tracking-widest text-[var(--color-amber)] uppercase">Mythos tracker</p>
       <p class="mt-1 text-xs text-[var(--color-muted)]">Snapshot as of {snapshot.as_of}</p>
 
       <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -1718,16 +1834,19 @@ export default function MythosApp() {
         ].map(([label, n]) => (
           <div class="rounded border border-[var(--color-border)] p-3">
             <div class="text-xl font-semibold">{n}</div>
-            <div class="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">{label}</div>
+            <div class="text-[10px] tracking-wider text-[var(--color-muted)] uppercase">
+              {label}
+            </div>
           </div>
         ))}
       </div>
 
       <h3 class="mt-6 text-sm font-semibold">Top bug classes</h3>
-      <ul class="mt-2 text-xs font-mono">
+      <ul class="mt-2 font-mono text-xs">
         {topBugClasses.map(([k, n]) => (
           <li class="flex justify-between border-b border-[var(--color-border)]/40 py-0.5">
-            <span>{k}</span><span>{n}</span>
+            <span>{k}</span>
+            <span>{n}</span>
           </li>
         ))}
       </ul>
@@ -1739,7 +1858,9 @@ export default function MythosApp() {
         <ul class="mt-2 space-y-2 text-sm">
           {posts.slice(0, 10).map((p) => (
             <li>
-              <a href={`/mythos/${p.slug}/`} class="text-[var(--color-amber)] hover:underline">{p.title}</a>
+              <a href={`/mythos/${p.slug}/`} class="text-[var(--color-amber)] hover:underline">
+                {p.title}
+              </a>
               <span class="ml-2 text-xs text-[var(--color-muted)]">
                 {dateFormatter.format(new Date(p.pubDate))}
               </span>
@@ -1755,6 +1876,7 @@ export default function MythosApp() {
 - [ ] **Step 2: Add the registry entry**
 
 Edit `src/apps/registry.ts`. Append inside the `apps` array (between `support` and `dmarc-mx`, or at the end — placement is cosmetic):
+
 ```ts
   {
     id: 'mythos',
@@ -1772,11 +1894,13 @@ Edit `src/apps/registry.ts`. Append inside the `apps` array (between `support` a
 - [ ] **Step 3: Verify build, lint, typecheck**
 
 Run:
+
 ```bash
 npm run lint
 npm run typecheck
 npm run build
 ```
+
 Expected: all pass.
 
 - [ ] **Step 4: Verify the e2e tile-count assertion still passes**
@@ -1796,6 +1920,7 @@ git commit -m "feat(mythos): add CortechOS app entry and window component"
 ## Task 14: GitHub Actions workflow
 
 **Files:**
+
 - Create: `.github/workflows/mythos.yml`
 
 > **Before merging**, add `ANTHROPIC_API_KEY` to repo Settings → Secrets → Actions. Document this in the PR description.
@@ -1803,6 +1928,7 @@ git commit -m "feat(mythos): add CortechOS app entry and window component"
 - [ ] **Step 1: Create the workflow**
 
 Create `.github/workflows/mythos.yml`:
+
 ```yaml
 name: Mythos tracker
 
@@ -1896,6 +2022,7 @@ git commit -m "ci(mythos): daily cron workflow with auto-merge"
 
 After the PR for this branch merges, in the GitHub UI go to Actions → "Mythos tracker" → Run workflow.
 Expected:
+
 - First run: bootstrap mode (snapshot is epoch-stamped), opens a "bootstrap" PR that auto-merges.
 - Subsequent runs (within 24h): no triggers (snapshot matches live), exits cleanly without opening a PR.
 
@@ -1906,11 +2033,13 @@ If guardrail failures happen, the workflow creates a `bot-failure` issue contain
 ## Task 15: Update `docs/architecture.md`
 
 **Files:**
+
 - Modify: `docs/architecture.md`
 
 - [ ] **Step 1: Append a Mythos tracker section**
 
 At the end of `docs/architecture.md`, add:
+
 ```markdown
 ## Mythos tracker
 
@@ -1938,6 +2067,7 @@ git commit -m "docs(mythos): describe tracker in architecture.md"
 - [ ] **Step 1: Run the full local CI suite**
 
 Run:
+
 ```bash
 npm run format:check
 npm run lint
@@ -1945,6 +2075,7 @@ npm run typecheck
 npm test
 npm run build
 ```
+
 Expected: all green. If `format:check` fails, run `npm run format` and commit the formatting changes as `chore: prettier`.
 
 - [ ] **Step 2: Run the dry-run pipeline against the live payload**
@@ -1955,6 +2086,7 @@ Expected: either "no triggers fired" or "bootstrap" — both are clean exits.
 - [ ] **Step 3: Open the PR for the implementation branch**
 
 Use the `/ship` slash command or `gh pr create` manually. PR description must include:
+
 - A note that **`ANTHROPIC_API_KEY` needs to be added to Settings → Secrets → Actions before the cron will succeed**
 - A pointer to the spec and this plan
 - A call-out that the first scheduled run will be a bootstrap (no post)

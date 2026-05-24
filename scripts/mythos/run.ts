@@ -56,7 +56,10 @@ async function main(): Promise<void> {
     console.log(`[mythos] no triggers fired; exiting cleanly`);
     return;
   }
-  console.log(`[mythos] ${triggers.length} triggers fired:`, triggers.map((t) => t.kind));
+  console.log(
+    `[mythos] ${triggers.length} triggers fired:`,
+    triggers.map((t) => t.kind),
+  );
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const callLlm = async (system: string, user: string): Promise<string> => {

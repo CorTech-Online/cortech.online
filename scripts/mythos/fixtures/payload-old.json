@@ -20,7 +20,12 @@
     { "project": "wolfSSL", "ecosystem": "Other", "cve_ids": ["CVE-2026-0001", "CVE-2026-0002"] }
   ],
   "cve_records": [
-    { "identifier": "CVE-2026-0001", "findings": [{ "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" }] }
+    {
+      "identifier": "CVE-2026-0001",
+      "findings": [
+        { "project": "wolfSSL", "bug_class": "heap-buffer-overflow", "ecosystem": "Other" }
+      ]
+    }
   ],
   "ghsa_records": []
 }

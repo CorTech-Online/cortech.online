@@ -6,8 +6,13 @@ const oldDigest: Digest = {
   as_of: '2026-05-22T00:00:00Z',
   fetched_at: '2026-05-23T19:00:00Z',
   headline: {
-    disclosed: 1000, acknowledged: 900, fixed: 90, advisories: 80,
-    candidates: 20000, reviewed: 1500, verified: 1300,
+    disclosed: 1000,
+    acknowledged: 900,
+    fixed: 90,
+    advisories: 80,
+    candidates: 20000,
+    reviewed: 1500,
+    verified: 1300,
   },
   rates: { true_positive_pct: 90, median_days_to_ack: 7, median_days_to_patch: 21 },
   by_bug_class: { 'heap-buffer-overflow': 100 },
@@ -37,10 +42,12 @@ const allKnownCves = ['CVE-2026-0001', 'CVE-2026-0002'];
 
 describe('renderPost()', () => {
   it('passes when guardrails are satisfied', async () => {
-    const callLlm = vi.fn().mockResolvedValue(
-      `wolfSSL CVE-2026-0002 is a newly revealed use-after-free vulnerability discovered by ` +
-        `Mythos Preview. It joins the project's growing list. ${'detail '.repeat(120)}.`,
-    );
+    const callLlm = vi
+      .fn()
+      .mockResolvedValue(
+        `wolfSSL CVE-2026-0002 is a newly revealed use-after-free vulnerability discovered by ` +
+          `Mythos Preview. It joins the project's growing list. ${'detail '.repeat(120)}.`,
+      );
     const post = await renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm });
     expect(post.body).toContain('CVE-2026-0002');
     expect(post.frontmatter.cve_ids).toContain('CVE-2026-0002');
@@ -61,19 +68,18 @@ describe('renderPost()', () => {
   it('rejects hallucinated CVE ids', async () => {
     const callLlm = vi
       .fn()
-      .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`,
-      )
-      .mockResolvedValueOnce(
-        `CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`,
-      );
+      .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`)
+      .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`);
     await expect(
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
     ).rejects.toThrow(GenerationError);
   });
 
   it('rejects output outside the word-count band', async () => {
-    const callLlm = vi.fn().mockResolvedValueOnce('CVE-2026-0002 short.').mockResolvedValueOnce('CVE-2026-0002 still short.');
+    const callLlm = vi
+      .fn()
+      .mockResolvedValueOnce('CVE-2026-0002 short.')
+      .mockResolvedValueOnce('CVE-2026-0002 still short.');
     await expect(
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
     ).rejects.toThrow(GenerationError);

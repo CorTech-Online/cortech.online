@@ -2,8 +2,13 @@
   "as_of": "1970-01-01T00:00:00Z",
   "fetched_at": "1970-01-01T00:00:00Z",
   "headline": {
-    "disclosed": 0, "acknowledged": 0, "fixed": 0, "advisories": 0,
-    "candidates": 0, "reviewed": 0, "verified": 0
+    "disclosed": 0,
+    "acknowledged": 0,
+    "fixed": 0,
+    "advisories": 0,
+    "candidates": 0,
+    "reviewed": 0,
+    "verified": 0
   },
   "rates": { "true_positive_pct": 0, "median_days_to_ack": 0, "median_days_to_patch": 0 },
   "by_bug_class": {},
