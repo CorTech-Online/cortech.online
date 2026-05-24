@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { renderPost, GenerationError, deriveSlug } from './generate';
 import type { Digest, Trigger } from './types';
 
@@ -41,6 +41,14 @@ const triggers: Trigger[] = [
 const allKnownCves = ['CVE-2026-0001', 'CVE-2026-0002'];
 
 describe('renderPost()', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('passes when guardrails are satisfied', async () => {
     const callLlm = vi
       .fn()
@@ -59,9 +67,12 @@ describe('renderPost()', () => {
       .fn()
       .mockResolvedValueOnce(`A vague summary with no CVE id. ${'detail '.repeat(120)}.`)
       .mockResolvedValueOnce(`Still no CVE id. ${'detail '.repeat(120)}.`);
-    await expect(
+    const [result] = await Promise.allSettled([
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
-    ).rejects.toThrow(GenerationError);
+      vi.runAllTimersAsync(),
+    ]);
+    expect(result.status).toBe('rejected');
+    expect((result as PromiseRejectedResult).reason).toBeInstanceOf(GenerationError);
     expect(callLlm).toHaveBeenCalledTimes(2);
   });
 
@@ -70,9 +81,12 @@ describe('renderPost()', () => {
       .fn()
       .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`)
       .mockResolvedValueOnce(`CVE-2026-0002 and also CVE-2026-9999. ${'detail '.repeat(120)}.`);
-    await expect(
+    const [result] = await Promise.allSettled([
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
-    ).rejects.toThrow(GenerationError);
+      vi.runAllTimersAsync(),
+    ]);
+    expect(result.status).toBe('rejected');
+    expect((result as PromiseRejectedResult).reason).toBeInstanceOf(GenerationError);
   });
 
   it('rejects output outside the word-count band', async () => {
@@ -80,13 +94,17 @@ describe('renderPost()', () => {
       .fn()
       .mockResolvedValueOnce('CVE-2026-0002 short.')
       .mockResolvedValueOnce('CVE-2026-0002 still short.');
-    await expect(
+    const [result] = await Promise.allSettled([
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
-    ).rejects.toThrow(GenerationError);
+      vi.runAllTimersAsync(),
+    ]);
+    expect(result.status).toBe('rejected');
+    expect((result as PromiseRejectedResult).reason).toBeInstanceOf(GenerationError);
   });
 
   it('throws when called with no triggers', async () => {
     const callLlm = vi.fn();
+    // No retry on empty-triggers path, no timer needed.
     await expect(
       renderPost({ oldDigest, newDigest, triggers: [], allKnownCves, callLlm }),
     ).rejects.toThrow(GenerationError);
@@ -95,9 +113,12 @@ describe('renderPost()', () => {
 
   it('retries once then throws GenerationError when callLlm rejects', async () => {
     const callLlm = vi.fn().mockRejectedValue(new Error('API down'));
-    await expect(
+    const [result] = await Promise.allSettled([
       renderPost({ oldDigest, newDigest, triggers, allKnownCves, callLlm }),
-    ).rejects.toThrow(GenerationError);
+      vi.runAllTimersAsync(),
+    ]);
+    expect(result.status).toBe('rejected');
+    expect((result as PromiseRejectedResult).reason).toBeInstanceOf(GenerationError);
     expect(callLlm).toHaveBeenCalledTimes(2);
   });
 });

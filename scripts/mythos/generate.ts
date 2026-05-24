@@ -69,6 +69,10 @@ export async function renderPost(opts: RenderOpts): Promise<Post> {
   let lastDraft = '';
   let lastError = '';
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      // Brief backoff before retry to reduce pressure on the LLM API.
+      await new Promise((r) => setTimeout(r, 2000));
+    }
     const corrective = attempt === 0 ? '' : `\n\nPrior attempt failed: ${lastError}. Try again.`;
     let body: string;
     try {
