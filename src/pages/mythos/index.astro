@@ -1,7 +1,10 @@
 ---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import snapshot from '../../content/mythos/_data/snapshot.json';
+import Timeline, { type HistoryRow } from '../../components/mythos/Timeline';
 
 const posts = (await getCollection('mythos')).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
@@ -16,6 +19,17 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 const topBugClasses = (Object.entries(snapshot.by_bug_class) as [string, number][])
   .sort((a, b) => b[1] - a[1])
   .slice(0, 10);
+
+let history: HistoryRow[] = [];
+try {
+  const raw = readFileSync(resolve('src/content/mythos/_data/history.jsonl'), 'utf8');
+  history = raw
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as HistoryRow);
+} catch {
+  // No history yet — Timeline will be hidden below.
+}
 ---
 
 <Base
@@ -52,6 +66,20 @@ const topBugClasses = (Object.entries(snapshot.by_bug_class) as [string, number]
         ))
       }
     </div>
+
+    {
+      history.length > 1 && (
+        <div class="mt-8">
+          <div class="mb-2 flex items-baseline justify-between">
+            <h2 class="text-lg font-semibold">Trend</h2>
+            <span class="font-mono text-[10px] tracking-wide text-[var(--color-muted)] uppercase">
+              {history.length} days
+            </span>
+          </div>
+          <Timeline client:load history={history} />
+        </div>
+      )
+    }
 
     <h2 class="mt-10 text-lg font-semibold">Top bug classes</h2>
     <ul class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
