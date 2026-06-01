@@ -2,6 +2,10 @@
   Content-Type: application/linkset+json
   Cache-Control: public, max-age=3600
 
+/feeds.opml
+  Content-Type: text/x-opml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 /
   Link: </.well-known/api-catalog>; rel="api-catalog"
   Link: </rss.xml>; rel="alternate"; type="application/rss+xml"

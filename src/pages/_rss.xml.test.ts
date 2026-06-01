@@ -81,6 +81,14 @@ beforeEach(() => {
 });
 
 describe('rss.xml route', () => {
+  it('declares an atom:link rel="self" pointing at the feed URL', async () => {
+    const xml = await getXml();
+    expect(xml).toContain('xmlns:atom="http://www.w3.org/2005/Atom"');
+    expect(xml).toMatch(
+      /<atom:link href="https:\/\/cortech\.online\/rss\.xml" rel="self" type="application\/rss\+xml"\s*\/>/,
+    );
+  });
+
   it('returns repo items when no posts exist', async () => {
     reposRef.current = [
       {

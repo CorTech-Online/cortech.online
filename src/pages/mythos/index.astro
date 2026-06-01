@@ -36,6 +36,8 @@ try {
   title="Mythos tracker"
   description="Daily progress on vulnerabilities discovered by Claude Mythos Preview, tracked from Anthropic's CVD dashboard."
   canonical="https://cortech.online/mythos"
+  feedUrl="/mythos/rss.xml"
+  feedTitle="Cortech — Mythos tracker"
 >
   <section class="mx-auto max-w-3xl px-6 pt-16 pb-10">
     <p class="font-mono text-[11px] tracking-[0.35em] text-[var(--color-amber)] uppercase">
@@ -48,7 +50,10 @@ try {
       Delta-driven daily summaries of <a
         href="https://red.anthropic.com/2026/cvd/"
         class="text-[var(--color-amber)] hover:underline">Anthropic's CVD dashboard</a
-      >. Snapshot as of {snapshot.as_of}.
+      >. Snapshot as of {snapshot.as_of}. Subscribe via the <a
+        href="/mythos/rss.xml"
+        class="text-[var(--color-amber)] hover:underline">RSS feed</a
+      >.
     </p>
 
     <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">

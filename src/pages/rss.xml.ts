@@ -39,12 +39,15 @@ export async function GET(context: APIContext) {
     .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
     .slice(0, 40);
 
+  const feedSelfUrl = new URL('/rss.xml', context.site!).toString();
+
   return rss({
     title: 'Cortech — Schmug',
     description: 'Small, useful things built at cortech.online',
     site: context.site!,
+    xmlns: { atom: 'http://www.w3.org/2005/Atom' },
     items,
-    customData: '<language>en-us</language>',
+    customData: `<atom:link href="${feedSelfUrl}" rel="self" type="application/rss+xml" /><language>en-us</language>`,
   });
 }
 

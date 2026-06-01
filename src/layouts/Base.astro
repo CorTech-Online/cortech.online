@@ -6,9 +6,14 @@ export type Props = {
   title: string;
   description?: string;
   canonical?: string;
+  /** A section-specific feed to advertise first (e.g. /podcast/rss.xml), in
+   * addition to the global firehose. Lets podcast/feed clients autodiscover
+   * the right feed instead of the enclosure-less everything-feed. */
+  feedUrl?: string;
+  feedTitle?: string;
 };
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, feedUrl, feedTitle } = Astro.props;
 const fullTitle = title === 'Cortech' ? 'Cortech — Schmug' : `${title} · Cortech`;
 const meta =
   description ??
@@ -26,7 +31,17 @@ const meta =
     <title>{fullTitle}</title>
     <meta name="description" content={meta} />
     {canonical && <link rel="canonical" href={canonical} />}
-    <link rel="alternate" type="application/rss+xml" title="Cortech" href="/rss.xml" />
+    {
+      feedUrl && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={feedTitle ?? title}
+          href={feedUrl}
+        />
+      )
+    }
+    <link rel="alternate" type="application/rss+xml" title="Cortech — everything" href="/rss.xml" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={meta} />
     <meta property="og:type" content="website" />

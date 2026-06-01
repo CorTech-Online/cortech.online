@@ -14,7 +14,9 @@ const AUTHOR = 'Cory Schmug';
 const OWNER_NAME = 'Cory Schmug';
 const OWNER_EMAIL = 'cory@cortech.online';
 const CATEGORY = 'Technology';
-const COVER_URL = 'https://cortech.online/og-image.png';
+// Apple Podcasts & Spotify require square cover art, 1400–3000px. og-image.png
+// is 1200×630 and would bounce on submission; podcast-cover.png is 1400×1400.
+const COVER_URL = 'https://cortech.online/podcast-cover.png';
 
 function escapeXml(s: string): string {
   return s

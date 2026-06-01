@@ -23,6 +23,33 @@
       "alternate": [
         { "href": "https://cortech.online/rss.xml", "type": "application/rss+xml" }
       ]
+    },
+    {
+      "anchor": "https://cortech.online/mythos/rss.xml",
+      "describedby": [
+        { "href": "https://cortech.online/mythos", "type": "text/html" }
+      ],
+      "alternate": [
+        { "href": "https://cortech.online/mythos/rss.xml", "type": "application/rss+xml" }
+      ]
+    },
+    {
+      "anchor": "https://cortech.online/podcast/rss.xml",
+      "describedby": [
+        { "href": "https://cortech.online/podcast", "type": "text/html" }
+      ],
+      "alternate": [
+        { "href": "https://cortech.online/podcast/rss.xml", "type": "application/rss+xml" }
+      ]
+    },
+    {
+      "anchor": "https://cortech.online/feeds.opml",
+      "describedby": [
+        { "href": "https://cortech.online/feeds", "type": "text/html" }
+      ],
+      "type": [
+        { "href": "https://cortech.online/feeds.opml" }
+      ]
     }
   ]
 }
