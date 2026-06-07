@@ -2,13 +2,11 @@ import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 import { fetchOriginalRepos } from '../lib/github';
-import { fetchEpisodes, summaryText } from '../lib/episodes';
 
 export async function GET(context: APIContext) {
-  const [repos, posts, episodes] = await Promise.all([
+  const [repos, posts] = await Promise.all([
     fetchOriginalRepos('schmug'),
     getCollection('blog', ({ data }) => !data.draft),
-    fetchEpisodes(),
   ]);
 
   const repoItems = repos.map((r) => ({
@@ -27,18 +25,10 @@ export async function GET(context: APIContext) {
     categories: ['blog', ...p.data.tags],
   }));
 
-  const episodeItems = episodes.map((ep) => ({
-    title: ep.title,
-    // ep.description is Spotify-flavored HTML (lead summary + a <p> per chapter).
-    // This general feed carries short plain-text blurbs like the repo/post items,
-    // so use the lead summary; full show notes live in /podcast/rss.xml.
-    description: summaryText(ep.description),
-    link: new URL(`/podcast/${ep.slug}/`, context.site!).toString(),
-    pubDate: ep.pubDate,
-    categories: ['podcast'],
-  }));
-
-  const items = [...repoItems, ...postItems, ...episodeItems]
+  // Podcast episodes are intentionally NOT listed here. They live only in
+  // /podcast/rss.xml (with audio enclosures); listing them in both feeds
+  // duplicated every episode for anyone subscribed to both (#149).
+  const items = [...repoItems, ...postItems]
     .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
     .slice(0, 40);
 

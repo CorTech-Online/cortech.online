@@ -218,21 +218,25 @@ describe('rss.xml route', () => {
     expect(xml).toContain('<category>cortechos</category>');
   });
 
-  it('includes podcast episodes in the unified feed sorted with posts and repos', async () => {
+  it('excludes podcast episodes — they live only in /podcast/rss.xml (#149)', async () => {
+    // Episodes are intentionally absent from the everything-feed: the dedicated
+    // podcast feed carries them with audio enclosures, and listing them here too
+    // duplicated every episode for anyone subscribed to both feeds. This guard
+    // fails if episodes are ever merged back into /rss.xml.
     reposRef.current = [
       {
-        name: 'older-repo',
-        description: 'old',
-        html_url: 'https://github.com/schmug/older-repo',
+        name: 'a-repo',
+        description: 'repo',
+        html_url: 'https://github.com/schmug/a-repo',
         updated_at: '2026-04-01T00:00:00Z',
       },
     ];
     postsRef.current = [
       {
-        id: 'middle-post',
+        id: 'a-post',
         data: {
-          title: 'Middle Post',
-          description: 'in between',
+          title: 'A Post',
+          description: 'post',
           pubDate: new Date('2026-04-10T00:00:00Z'),
           tags: [],
           draft: false,
@@ -256,41 +260,11 @@ describe('rss.xml route', () => {
     ];
 
     const xml = await getXml();
-    expect(countItems(xml)).toBe(3);
-    expect(listTitles(xml)).toEqual(['Newest Episode', 'Middle Post', 'older-repo']);
-    expect(xml).toContain('https://cortech.online/podcast/newest-episode/');
-    expect(xml).toContain('<category>podcast</category>');
-  });
-
-  it('reduces a Spotify-flavored episode description to a clean summary blurb', async () => {
-    // The everything-feed is a general aggregator (no enclosures) where repos
-    // and posts carry short plain-text blurbs. An episode entry should match —
-    // the lead summary, not the full HTML chapter list the dedicated podcast
-    // feed keeps as show notes.
-    episodesRef.current = [
-      {
-        slug: 'episode-with-chapters',
-        title: 'Episode With Chapters',
-        description:
-          '<p>The clean lead summary.</p><p>(0:00) - Intro</p>' +
-          '<p>(1:23) - Topic - <a href="https://example.com/story">source</a></p>',
-        pubDate: new Date('2026-04-20T00:00:00Z'),
-        mp3_url: 'https://audio.cortech.online/ep.mp3',
-        mp3_bytes: 1000,
-        duration_s: 100,
-        chapters: [],
-        spotify_uri: null,
-        cover_url: null,
-        explicit: false,
-      },
-    ];
-
-    const xml = await getXml();
-    const itemBlock = xml.split('<item>').find((b) => b.includes('episode-with-chapters')) ?? '';
-    expect(itemBlock).toContain('The clean lead summary.');
-    expect(itemBlock).not.toContain('(0:00)');
-    expect(itemBlock).not.toContain('(1:23)');
-    expect(itemBlock).not.toContain('example.com');
-    expect(itemBlock).not.toContain('&lt;p&gt;');
+    // Only repo + post items; the episode must not appear despite being newest.
+    expect(countItems(xml)).toBe(2);
+    expect(listTitles(xml)).toEqual(['A Post', 'a-repo']);
+    expect(xml).not.toContain('Newest Episode');
+    expect(xml).not.toContain('newest-episode');
+    expect(xml).not.toContain('<category>podcast</category>');
   });
 });
