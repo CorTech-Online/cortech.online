@@ -58,14 +58,14 @@ The pipeline script is committed for reproducibility but **never runs in CI or a
 
 ### Runtime modules
 
-| File | Responsibility |
-| --- | --- |
-| `src/lib/dmarcus/frames.ts` | Typed loader + runtime validation of `dance-frames.json` (dance frame count; every frame shares `w`/`h`; `colors.length === w*h`; chars within ramp; idle has `open` + `blink`). Pure → unit-tested. |
-| `src/lib/dmarcus/chiptune.ts` | Pure note-sequence data (a **short, evocative** melodic hook) + a tiny Web Audio builder returning `{ play, stop }`. `AudioContext` created lazily on user gesture. Note data pure → unit-tested. |
-| `src/components/os/apps/DmarcusApp.tsx` | The window. Plays the `dance` frames to a `<canvas>` (ASCILINE-style, efficient), with chiptune Play/Stop and the YouTube button. Lazy-loaded like other native apps. |
-| `src/components/os/useIdleDmarcus.ts` | Idle-timer hook: fires after `IDLE_MS` (60 000) of no pointer/keydown, resets on activity, re-arms with a cooldown, and **never fires under `prefers-reduced-motion`**. Timer logic pure → unit-tested. |
-| `src/components/os/IdleDmarcus.tsx` | The idle overlay (small canvas), rendered in `OSShell.tsx`. Shows the resting pose and **blinks** (open→blink→open) at a random 3–6 s cadence. Click → `useOS.getState().openApp('dmarcus')`. Does not dance, makes no sound. |
-| `src/apps/registry.ts` | One new `AppManifest` entry (native, `allowMultiple: false`). |
+| File                                    | Responsibility                                                                                                                                                                                                                |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/dmarcus/frames.ts`             | Typed loader + runtime validation of `dance-frames.json` (dance frame count; every frame shares `w`/`h`; `colors.length === w*h`; chars within ramp; idle has `open` + `blink`). Pure → unit-tested.                          |
+| `src/lib/dmarcus/chiptune.ts`           | Pure note-sequence data (a **short, evocative** melodic hook) + a tiny Web Audio builder returning `{ play, stop }`. `AudioContext` created lazily on user gesture. Note data pure → unit-tested.                             |
+| `src/components/os/apps/DmarcusApp.tsx` | The window. Plays the `dance` frames to a `<canvas>` (ASCILINE-style, efficient), with chiptune Play/Stop and the YouTube button. Lazy-loaded like other native apps.                                                         |
+| `src/components/os/useIdleDmarcus.ts`   | Idle-timer hook: fires after `IDLE_MS` (60 000) of no pointer/keydown, resets on activity, re-arms with a cooldown, and **never fires under `prefers-reduced-motion`**. Timer logic pure → unit-tested.                       |
+| `src/components/os/IdleDmarcus.tsx`     | The idle overlay (small canvas), rendered in `OSShell.tsx`. Shows the resting pose and **blinks** (open→blink→open) at a random 3–6 s cadence. Click → `useOS.getState().openApp('dmarcus')`. Does not dance, makes no sound. |
+| `src/apps/registry.ts`                  | One new `AppManifest` entry (native, `allowMultiple: false`).                                                                                                                                                                 |
 
 ### Registry entry (approved)
 
@@ -124,10 +124,10 @@ The launcher, desktop icons, taskbar, and mobile springboard pick this up automa
 
 ## Risks & mitigations
 
-| Risk | Mitigation |
-| --- | --- |
-| Baked JSON too large | Frame trim, palette-index colors, drop near-duplicate frames; budget < 150 KB. |
-| Audio autoplay blocked / annoying | Opt-in only, on user gesture; idle is silent. |
+| Risk                              | Mitigation                                                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Baked JSON too large              | Frame trim, palette-index colors, drop near-duplicate frames; budget < 150 KB.                                             |
+| Audio autoplay blocked / annoying | Opt-in only, on user gesture; idle is silent.                                                                              |
 | Idle dance annoys repeat visitors | Idle doesn't dance (stand + blink only); 60 s threshold; dismiss-on-activity; re-arm cooldown; never under reduced-motion. |
 
 ## Resolved sign-offs

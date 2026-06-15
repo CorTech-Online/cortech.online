@@ -66,7 +66,9 @@ export default function DmarcusApp() {
         <div className="font-mono text-[11px] tracking-[0.3em] text-[var(--color-amber)] uppercase">
           DMarcus
         </div>
-        <p className="mt-1 text-sm text-[var(--color-muted)]">Guarded by DMarcus. Hyped by nobody.</p>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          Guarded by DMarcus. Hyped by nobody.
+        </p>
       </div>
 
       <div

@@ -26,9 +26,11 @@ function validateFrame(frame: AsciiFrame, cols: number, ramp: string, label: str
   if (frame.w !== cols) throw new Error(`${label}: w ${frame.w} !== meta.cols ${cols}`);
   if (frame.h <= 0) throw new Error(`${label}: h must be > 0`);
   const lines = frame.text.split('\n');
-  if (lines.length !== frame.h) throw new Error(`${label}: ${lines.length} lines, expected ${frame.h}`);
+  if (lines.length !== frame.h)
+    throw new Error(`${label}: ${lines.length} lines, expected ${frame.h}`);
   for (const line of lines) {
-    if (line.length !== frame.w) throw new Error(`${label}: line width ${line.length} !== ${frame.w}`);
+    if (line.length !== frame.w)
+      throw new Error(`${label}: line width ${line.length} !== ${frame.w}`);
   }
   const max = frame.w * frame.h;
   for (const key of Object.keys(frame.colors)) {
@@ -36,7 +38,8 @@ function validateFrame(frame: AsciiFrame, cols: number, ramp: string, label: str
     if (!Number.isInteger(idx) || idx < 0 || idx >= max) {
       throw new Error(`${label}: color index ${key} out of range`);
     }
-    if (!HEX6.test(frame.colors[key])) throw new Error(`${label}: invalid hex ${frame.colors[key]}`);
+    if (!HEX6.test(frame.colors[key]))
+      throw new Error(`${label}: invalid hex ${frame.colors[key]}`);
   }
   const allowed = new Set(ramp.split(''));
   for (const ch of frame.text.replace(/\n/g, '')) {
@@ -51,7 +54,8 @@ export function validateFramesData(data: DanceFramesData): void {
     throw new Error('dance must be a non-empty array');
   }
   data.dance.forEach((f, i) => validateFrame(f, meta.cols, meta.ramp, `dance[${i}]`));
-  if (!data.idle || !data.idle.open || !data.idle.blink) throw new Error('idle must have open and blink');
+  if (!data.idle || !data.idle.open || !data.idle.blink)
+    throw new Error('idle must have open and blink');
   validateFrame(data.idle.open, meta.cols, meta.ramp, 'idle.open');
   validateFrame(data.idle.blink, meta.cols, meta.ramp, 'idle.blink');
 }

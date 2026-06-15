@@ -158,4 +158,6 @@ const payload = {
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(payload));
 const sizeKb = (JSON.stringify(payload).length / 1024).toFixed(0);
-console.log(`\nwrote ${OUT} (${sizeKb} KB) — ${dance.length} dance frames + idle open/blink @ ${COLS} cols`);
+console.log(
+  `\nwrote ${OUT} (${sizeKb} KB) — ${dance.length} dance frames + idle open/blink @ ${COLS} cols`,
+);
