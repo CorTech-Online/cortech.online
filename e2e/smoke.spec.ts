@@ -353,3 +353,23 @@ test.describe('iframe embed', () => {
     ).toEqual([]);
   });
 });
+
+test.describe('DMarcus rickroll app', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('opens and exposes a safe outbound rickroll link + canvas', async ({ page }) => {
+    const messages = captureConsole(page);
+    await bootDesktop(page);
+    await openApp(page, 'DMarcus');
+
+    const win = page.locator('section[aria-label="DMarcus window"]');
+    await expect(win.locator('canvas')).toBeVisible();
+
+    const link = win.locator('a[href*="dQw4w9WgXcQ"]');
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /noopener/);
+
+    expect(filterNoise(messages)).toEqual([]);
+  });
+});
