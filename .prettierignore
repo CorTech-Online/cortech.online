@@ -6,3 +6,4 @@ test-results/
 coverage/
 package-lock.json
 src/content/blog/**/*.md
+src/lib/dmarcus/dance-frames.json

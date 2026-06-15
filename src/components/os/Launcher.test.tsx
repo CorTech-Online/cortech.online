@@ -62,11 +62,12 @@ describe('<Launcher />', () => {
     const user = userEvent.setup();
     render(<Launcher open={true} onClose={() => {}} />);
     const input = screen.getByRole('textbox', { name: /search apps/i });
-    await user.type(input, 'dmarc');
+    // "donthype" is unique; "dmarc" now also matches the DMarcus easter-egg app.
+    await user.type(input, 'donthype');
 
     const options = screen.getAllByRole('option');
     expect(options).toHaveLength(1);
-    expect(options[0]!.textContent).toMatch(/dmarc\.mx/i);
+    expect(options[0]!.textContent).toMatch(/donthype\.me/i);
   });
 
   it('ArrowDown / ArrowUp moves aria-selected across results', async () => {

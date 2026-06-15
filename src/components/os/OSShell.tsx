@@ -4,6 +4,7 @@ import { Desktop } from './Desktop';
 import { Taskbar } from './Taskbar';
 import { Launcher } from './Launcher';
 import { BootSplash } from './BootSplash';
+import { IdleDmarcus } from './IdleDmarcus';
 import { useGlobalShortcuts } from './useKeyboard';
 import { useOS } from './store';
 import { apps } from '../../apps/registry';
@@ -92,6 +93,7 @@ export default function OSShell() {
       <Taskbar onOpenLauncher={toggleLauncher} />
       <Launcher open={launcherOpen} onClose={closeLauncher} />
       <BootSplash />
+      <IdleDmarcus />
 
       <div role="status" aria-live="polite" className="sr-only">
         {announcement}

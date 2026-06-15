@@ -109,4 +109,15 @@ export const apps: AppManifest[] = [
     minSize: { w: 480, h: 360 },
     allowMultiple: false,
   },
+  {
+    id: 'dmarcus',
+    name: 'DMarcus',
+    description: 'Your mascot learned a new dance.',
+    icon: '🕺',
+    type: 'native',
+    component: () => import('../components/os/apps/DmarcusApp'),
+    defaultSize: { w: 540, h: 600 },
+    minSize: { w: 380, h: 460 },
+    allowMultiple: false,
+  },
 ];
