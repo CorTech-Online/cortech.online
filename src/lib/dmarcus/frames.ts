@@ -56,7 +56,9 @@ export function validateFramesData(data: DanceFramesData): void {
   validateFrame(data.idle.blink, meta.cols, meta.ramp, 'idle.blink');
 }
 
-export const danceFrames = rawFrames as DanceFramesData;
+// Cast through `unknown`: TS infers per-frame literal color keys from the JSON,
+// which aren't directly comparable to the general Record<string, string> shape.
+export const danceFrames = rawFrames as unknown as DanceFramesData;
 
 /** Draw one ASCII frame to a 2D canvas context. Caller sets font + textBaseline first. */
 export function drawAsciiFrame(
