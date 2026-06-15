@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SONG, voiceDurationMs, totalDurationMs } from './chiptune';
+import { SONG, DRUMS, EIGHTH, voiceDurationMs, totalDurationMs } from './chiptune';
 
 describe('chiptune SONG', () => {
   it('has at least a bass and a lead voice', () => {
@@ -33,5 +33,27 @@ describe('chiptune SONG', () => {
     const total = totalDurationMs();
     expect(total).toBeGreaterThan(2000);
     expect(total).toBeLessThan(12000);
+  });
+});
+
+describe('chiptune DRUMS', () => {
+  it('has kick, snare, and hat voices', () => {
+    expect(DRUMS.map((d) => d.type).sort()).toEqual(['hat', 'kick', 'snare']);
+  });
+
+  it('every drum voice has positive gain and at least one hit', () => {
+    for (const d of DRUMS) {
+      expect(d.gain).toBeGreaterThan(0);
+      expect(d.steps.some(Boolean)).toBe(true);
+    }
+  });
+
+  it('all drum voices share the same step count', () => {
+    const lengths = DRUMS.map((d) => d.steps.length);
+    for (const l of lengths) expect(l).toBe(lengths[0]);
+  });
+
+  it('the drum grid spans the full melodic loop', () => {
+    expect(DRUMS[0].steps.length * EIGHTH).toBe(totalDurationMs());
   });
 });
